@@ -1366,6 +1366,16 @@ Return value is a list of interpolatingp for all controllers, so (null (some #'i
   (:speak-jp (text &key (topic-name "robotsound_jp") wait (volume 1.0))
    (send self :speak text :lang :ja :topic-name topic-name :wait wait :volume volume)))
 ;;
+;; for speech-to-text services
+(defmethod robot-interface
+  (:speech-to-text (text &key (topic-name "/speech_to_text") (timeout nil))
+   (let (msg)
+     (setq msg (ros::one-shot-subscribe topic-name speech_recognition_msgs::SpeechRecognitionCandidates :timeout timeout))
+     (if msg
+       (elt (send msg :transcript) 0)
+       nil
+       )))
+;;
 (defclass robot-move-base-interface
   :super robot-interface
   :slots (move-base-action move-base-trajectory-action
